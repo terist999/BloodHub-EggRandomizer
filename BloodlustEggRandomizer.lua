@@ -1,6 +1,4 @@
-# Save the finalized Roblox Lua script for Bloodhub with animated loading screen and delayed main GUI reveal
 
-script_content = """
 --[[
     Bloodhub Script - Finalized Version (July 2025)
     Created by Blood.lust (@terist999)
@@ -129,10 +127,3 @@ spawn(function()
 
     -- Add more elements here for your GUI functionality
 end)
-"""
-
-file_path = "/mnt/data/Bloodhub_LoadingGUI_Final.lua"
-with open(file_path, "w") as f:
-    f.write(script_content)
-
-file_path
