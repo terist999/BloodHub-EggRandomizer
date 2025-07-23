@@ -1,155 +1,148 @@
---[[ 
-    BloodlustEggRandomizer by bloodlust92
-    Final Version - Includes:
-    - 5-minute engaging loading screen
-    - Rainbow bar
-    - Random loading tips
-    - Movable GUI
-    - 🅱️ Toggle
-    - Randomize Pet with correct result display
---]]
+--[[
+    Bloodhub GUI - Advanced Bloody Loading Screen (3 minutes)
+    By Blood.lust (@terist999)
+    Features:
+    - 3-minute animated loading screen with tips & mini-game
+    - Displays logo (ninja red)
+    - Tips change every 10 seconds
+    - Mini-game: Click the bouncing blood icon to gain points
+    - % Loading from 0 to 100
+    - GUI only reveals after 3 minutes
+    - GUI is draggable
+]]
 
--- == LOADING SCREEN ==
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 
-local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-screenGui.IgnoreGuiInset = true
-screenGui.ResetOnSpawn = false
+-- Create Loading Screen
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(1, 0, 1, 0)
+loadingFrame.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
+loadingFrame.BorderSizePixel = 0
+loadingFrame.Parent = gui
 
-local blackout = Instance.new("Frame", screenGui)
-blackout.BackgroundColor3 = Color3.new(0, 0, 0)
-blackout.Size = UDim2.new(1, 0, 1, 0)
-blackout.Position = UDim2.new(0, 0, 0, 0)
-blackout.BorderSizePixel = 0
+-- Logo
+local logo = Instance.new("ImageLabel")
+logo.Size = UDim2.new(0, 200, 0, 200)
+logo.Position = UDim2.new(0.5, -100, 0.1, 0)
+logo.BackgroundTransparency = 1
+logo.Image = "rbxassetid://17324108229" -- Ninja logo uploaded on your Roblox account
+logo.Parent = loadingFrame
 
-local barBackground = Instance.new("Frame", screenGui)
-barBackground.Size = UDim2.new(0.6, 0, 0.05, 0)
-barBackground.Position = UDim2.new(0.2, 0, 0.5, 0)
-barBackground.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-barBackground.BorderSizePixel = 0
+-- Loading Text
+local loadingLabel = Instance.new("TextLabel")
+loadingLabel.Size = UDim2.new(0, 300, 0, 50)
+loadingLabel.Position = UDim2.new(0.5, -150, 0.65, 0)
+loadingLabel.BackgroundTransparency = 1
+loadingLabel.Text = "Loading: 0%"
+loadingLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+loadingLabel.Font = Enum.Font.FredokaOne
+loadingLabel.TextScaled = true
+loadingLabel.Parent = loadingFrame
 
-local loadingBar = Instance.new("Frame", barBackground)
-loadingBar.Size = UDim2.new(0, 0, 1, 0)
-loadingBar.Position = UDim2.new(0, 0, 0, 0)
-loadingBar.BorderSizePixel = 0
+-- Tips
+local tipsLabel = Instance.new("TextLabel")
+tipsLabel.Size = UDim2.new(0, 600, 0, 40)
+tipsLabel.Position = UDim2.new(0.5, -300, 0.8, 0)
+tipsLabel.BackgroundTransparency = 1
+tipsLabel.Text = "Tip: Press B to toggle GUI"
+tipsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+tipsLabel.Font = Enum.Font.FredokaOne
+tipsLabel.TextScaled = true
+tipsLabel.Parent = loadingFrame
 
-local credit = Instance.new("TextLabel", screenGui)
-credit.Text = "Created by bloodlust92"
-credit.Font = Enum.Font.FredokaOne
-credit.TextSize = 20
-credit.TextColor3 = Color3.new(1, 0, 0)
-credit.BackgroundTransparency = 1
-credit.Position = UDim2.new(0.5, -100, 0.95, 0)
-credit.Size = UDim2.new(0, 200, 0, 30)
-
-local tipLabel = Instance.new("TextLabel", screenGui)
-tipLabel.Text = "Loading Tip: Summoning bees..."
-tipLabel.Font = Enum.Font.FredokaOne
-tipLabel.TextSize = 18
-tipLabel.TextColor3 = Color3.new(1, 1, 1)
-tipLabel.BackgroundTransparency = 1
-tipLabel.Position = UDim2.new(0.5, -150, 0.55, 30)
-tipLabel.Size = UDim2.new(0, 300, 0, 30)
-
-local tips = {
-    "Summoning divine pets...",
-    "Growing prehistoric fruit...",
-    "Injecting bloodlust...",
-    "Randomizing mutations...",
-    "Tickling eggs gently...",
-    "Calibrating 🅱️ Toggle...",
-    "Loading animation prediction...",
-    "Unleashing Disco Bee...",
+local funnyTips = {
+    "Tip: Don't feed your bee hotdogs.",
+    "Tip: Every fruit has a dream.",
+    "Tip: Legendary pets don't like being called 'cute'.",
+    "Tip: The 🅱️ icon is watching you.",
+    "Tip: Click fast, but think faster.",
+    "Tip: Avoid angry seagulls in summer."
 }
 
-local function getRainbowColor(i)
-    local frequency = 0.1
-    return Color3.fromHSV((tick() * frequency + i / 100) % 1, 1, 1)
-end
+-- Mini-game (Bouncing Blood Button)
+local bloodBtn = Instance.new("TextButton")
+bloodBtn.Text = "🩸"
+bloodBtn.Size = UDim2.new(0, 60, 0, 60)
+bloodBtn.Position = UDim2.new(0.5, -30, 0.5, -30)
+bloodBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+bloodBtn.TextScaled = true
+bloodBtn.Font = Enum.Font.FredokaOne
+bloodBtn.TextColor3 = Color3.new(1,1,1)
+bloodBtn.Parent = loadingFrame
 
+local score = 0
+bloodBtn.MouseButton1Click:Connect(function()
+    score += 1
+    tipsLabel.Text = "Mini-game Score: " .. score
+end)
+
+-- Bounce animation
 spawn(function()
-    for i = 1, 300 do  -- 5 minutes (300 seconds)
-        loadingBar.Size = UDim2.new(i / 300, 0, 1, 0)
-        loadingBar.BackgroundColor3 = getRainbowColor(i)
-        if i % 15 == 0 then
-            tipLabel.Text = "Loading Tip: " .. tips[math.random(1, #tips)]
-        end
-        wait(1)
+    local direction = Vector2.new(1, 1)
+    while true do
+        bloodBtn.Position = bloodBtn.Position + UDim2.new(0.01 * direction.X, 0, 0.01 * direction.Y, 0)
+        if bloodBtn.Position.X.Offset <= 0 or bloodBtn.Position.X.Offset >= gui.AbsoluteSize.X - 60 then direction = Vector2.new(-direction.X, direction.Y) end
+        if bloodBtn.Position.Y.Offset <= 0 or bloodBtn.Position.Y.Offset >= gui.AbsoluteSize.Y - 60 then direction = Vector2.new(direction.X, -direction.Y) end
+        wait(0.03)
     end
-    screenGui:Destroy()
 end)
 
--- == BLOODY EGG RANDOMIZER GUI ==
-
-local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-gui.Name = "BloodyEggGUI"
-gui.ResetOnSpawn = false
-
-local mainFrame = Instance.new("Frame", gui)
-mainFrame.Size = UDim2.new(0, 300, 0, 200)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-mainFrame.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
-mainFrame.BorderSizePixel = 0
-mainFrame.Active = true
-mainFrame.Draggable = true
-
-local title = Instance.new("TextLabel", mainFrame)
-title.Text = "🩸 Bloodlust Egg Randomizer"
-title.Font = Enum.Font.FredokaOne
-title.TextSize = 22
-title.TextColor3 = Color3.new(1, 0, 0)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundTransparency = 1
-
-local resultLabel = Instance.new("TextLabel", mainFrame)
-resultLabel.Text = "Pet: ???"
-resultLabel.Font = Enum.Font.FredokaOne
-resultLabel.TextSize = 20
-resultLabel.TextColor3 = Color3.new(1, 1, 1)
-resultLabel.Size = UDim2.new(1, 0, 0, 40)
-resultLabel.Position = UDim2.new(0, 0, 0.25, 0)
-resultLabel.BackgroundTransparency = 1
-
-local pets = {
-    "Dog", "Bunny", "Golden Lab",
-    "Chicken", "Cat",
-    "Dragonfly", "Giant Ant", "Caterpillar", "Snail",
-    "Queen Bee", "Disco Bee", "Blood Owl", "Night Owl", "Raccoon", "Fennec Fox",
-    "Pterodactyl", "Raptor", "T-Rex"
-}
-
-local cooldown = false
-local function randomizePet()
-    if cooldown then return end
-    cooldown = true
-    local selected = pets[math.random(1, #pets)]
-    resultLabel.Text = "Pet: " .. selected
-    wait(10)
-    cooldown = false
-end
-
-local randomizeBtn = Instance.new("TextButton", mainFrame)
-randomizeBtn.Text = "🎲 Click Randomize"
-randomizeBtn.Font = Enum.Font.FredokaOne
-randomizeBtn.TextSize = 20
-randomizeBtn.Size = UDim2.new(0.8, 0, 0, 40)
-randomizeBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
-randomizeBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-randomizeBtn.TextColor3 = Color3.new(1, 1, 1)
-randomizeBtn.MouseButton1Click:Connect(randomizePet)
-
-local toggleButton = Instance.new("TextButton", gui)
-toggleButton.Text = "🅱️"
-toggleButton.Font = Enum.Font.FredokaOne
-toggleButton.TextSize = 30
-toggleButton.Size = UDim2.new(0, 50, 0, 50)
-toggleButton.Position = UDim2.new(1, -60, 0, 10)
-toggleButton.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
-toggleButton.TextColor3 = Color3.new(1, 1, 1)
-toggleButton.Active = true
-toggleButton.Draggable = true
-
-toggleButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
+-- % Loader
+spawn(function()
+    for i = 0, 100 do
+        loadingLabel.Text = "Loading: " .. i .. "%"
+        wait(1.8) -- 180s total ~ 3 minutes
+    end
 end)
+
+-- Tips rotator
+spawn(function()
+    while true do
+        tipsLabel.Text = funnyTips[math.random(1, #funnyTips)]
+        wait(10)
+    end
+end)
+
+-- Show Main GUI after loading
+wait(180) -- 3 minutes
+loadingFrame:Destroy()
+
+-- Main GUI Setup
+local mainGui = Instance.new("Frame")
+mainGui.Size = UDim2.new(0, 400, 0, 300)
+mainGui.Position = UDim2.new(0.5, -200, 0.5, -150)
+mainGui.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+mainGui.BorderSizePixel = 0
+mainGui.Parent = gui
+
+-- Drag support
+local dragging, offset
+mainGui.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        offset = input.Position - mainGui.Position
+    end
+end)
+mainGui.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+mainGui.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        mainGui.Position = UDim2.new(0, input.Position.X - offset.X.Offset, 0, input.Position.Y - offset.Y.Offset)
+    end
+end)
+
+-- Placeholder Label
+local welcome = Instance.new("TextLabel")
+welcome.Size = UDim2.new(1, 0, 0, 50)
+welcome.Position = UDim2.new(0, 0, 0, 0)
+welcome.BackgroundTransparency = 1
+welcome.Text = "Welcome to BloodHub 💀"
+welcome.TextColor3 = Color3.new(1, 0, 0)
+welcome.TextScaled = true
+welcome.Font = Enum.Font.FredokaOne
+welcome.Parent = mainGui
